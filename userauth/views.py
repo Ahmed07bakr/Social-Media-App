@@ -47,7 +47,7 @@ def logout(request):
 def upload(request):
   if request.method == 'POST':
     user = request.user.username
-    image = request.Files.get('image-upload')
+    image = request.FILES.get('image-upload')
     caption = request.POST['caption']
     new_post = Post.objects.create(user=user,image=image,caption=caption)
     new_post.save()
@@ -58,6 +58,16 @@ def upload(request):
   
 
 def home (request):
-  return HttpResponse("Hello Django")
+  post = Post.objects.all().order_by('-created_at')
+  # profile = Profile.objects.get(user = request.user)
+  context = {
+    'post':post,
+    # 'profile':profile,
+  }
+  return render (request,'main.html',context)
+
+
+
+
 
 
