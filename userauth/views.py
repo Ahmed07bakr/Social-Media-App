@@ -1,7 +1,7 @@
-from django.shortcuts import render,redirect
+from django.shortcuts import render,redirect,get_object_or_404
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate,login,logout
-from .models import Profile,Post
+from .models import Profile,Post,LikePost
 from django.http import HttpResponse
 # Create your views here.
 
@@ -67,6 +67,22 @@ def home (request):
   return render (request,'main.html',context)
 
 
+
+def likes(request,id):
+  if request.method == 'GET':
+    username=request.user.username
+    post = get_object_or_404(Post,id=id)
+    like_filter = LikePost.objects.filter(post_id=id,username=username).first()
+    if like_filter is None:
+      new_like = LikePost.objects.create(post_id=id,username=username)
+      post.no_of_likes += 1
+      
+    else:
+      like_filter.delete()
+      post.no_of_likes = no_likes - 1
+      
+  post.save()
+  return redirect('/')
 
 
 
