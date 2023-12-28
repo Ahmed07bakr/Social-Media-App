@@ -79,10 +79,50 @@ def likes(request,id):
       
     else:
       like_filter.delete()
-      post.no_of_likes = no_likes - 1
+      post.no_of_likes -=  1
       
   post.save()
   return redirect('/')
+
+
+def home_posts(request,id):
+  post = Post.objects.get(id=id)
+  profile = Profile.objects.get(user=request.user)
+  context = {
+    'profile':profile,
+    'post':post,
+  }
+
+  return render (request,'main.html',context)
+
+
+def explore (request):
+  post = Post.objects.all().order_by('created_at')
+  # profile = Profile.objects.get(user=request.user)
+  context={
+    'post':post,
+    # 'profile':profile,
+
+  }
+  return render(request,'explore.html',context)
+
+
+def profile(request,id_user):
+  user_object = User.objects.get(username=id_user)
+  profile = Profile.objects.get(user=request.user)
+  user_profile = Profile.objects.get(user=user_object)
+  user_posts = Post.objects.filter(user=id_user).order_by('created_at')
+  user_post_length = len(user_posts)
+  context={
+    'user_object':user_object,
+    'profile':profile,
+    'user_profile':user_profile,
+    'user_posts':user_posts,
+    'user_post_length':user_post_length,
+  }
+  return render(request,'profile.html',context)
+
+
 
 
 
