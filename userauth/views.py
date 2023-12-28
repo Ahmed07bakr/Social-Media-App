@@ -107,12 +107,16 @@ def explore (request):
   return render(request,'explore.html',context)
 
 
+
+
 def profile(request,id_user):
+
   user_object = User.objects.get(username=id_user)
   profile = Profile.objects.get(user=request.user)
   user_profile = Profile.objects.get(user=user_object)
   user_posts = Post.objects.filter(user=id_user).order_by('created_at')
   user_post_length = len(user_posts)
+
   context={
     'user_object':user_object,
     'profile':profile,
@@ -120,6 +124,34 @@ def profile(request,id_user):
     'user_posts':user_posts,
     'user_post_length':user_post_length,
   }
+
+  if request.user.username == id_user:
+
+    if request.method == 'POST':
+
+      if request.FILES.get('image')== None:
+        image = user_profile.profileimg
+        bio = request.POST['bio']
+        location = request.POST['location']
+        user_profile.image=image
+        user_profile.bio = bio
+        user_profile.location = location
+        user_profile.save()
+
+      if request.FILES.get('image')!= None:
+        image = request.FILES.get('image')
+        bio = request.POST['bio']
+        location = request.POST['location']
+        user_profile.image=image
+        user_profile.bio = bio
+        user_profile.location = location
+        user_profile.save()
+      return redirect ('/profile/'+id_user)
+    
+    else:
+      return render (request,'profile.html',context)
+    
+
   return render(request,'profile.html',context)
 
 
