@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import signup,home,login,logout,upload,likes,home_posts,explore,profile
+from .views import signup,home,login,logout,upload,likes,home_posts,explore,profile,follow
 
 
 
@@ -14,4 +14,5 @@ urlpatterns = [
     path('#<str:id>',home_posts),
     path('explore',explore),
     path('profile/',profile),
+    path('follow',follow,name='follow'),
 ]

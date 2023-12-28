@@ -1,7 +1,7 @@
 from django.shortcuts import render,redirect,get_object_or_404
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate,login,logout
-from .models import Profile,Post,LikePost
+from .models import Profile,Post,LikePost,Followers
 from django.http import HttpResponse
 # Create your views here.
 
@@ -117,12 +117,26 @@ def profile(request,id_user):
   user_posts = Post.objects.filter(user=id_user).order_by('created_at')
   user_post_length = len(user_posts)
 
+  follower = request.user.username
+  user = id_user
+  if Followers.objects.filter(user=user,follower=follower):
+    follow_unfollow = 'UnFollow'
+  else:
+    follow_unfollow = 'Follow'
+  
+  user_followers = len(Followers.objects.filter(user=id_user))
+  user_following = len(Followers.objects.filter(follower = id_user))
+
+
   context={
     'user_object':user_object,
     'profile':profile,
     'user_profile':user_profile,
     'user_posts':user_posts,
     'user_post_length':user_post_length,
+    'user_followers':user_followers,
+    'user_following':user_following,
+    'follow_unfollow':follow_unfollow,
   }
 
   if request.user.username == id_user:
@@ -155,6 +169,23 @@ def profile(request,id_user):
   return render(request,'profile.html',context)
 
 
+
+def follow(request):
+  if request.method == 'POST':
+    follower = request.POST['follower']
+    user = request.POST['user']
+    if Followers.objects.filter(follower = follower,user=user).first():
+      delete_follower = Followers.objects.get(user=user,follower=follower)
+      delete_follower.delete()
+      return redirect('/profile/'+user)
+    
+    else:
+      new_follower = Followers.objects.create(user=user,follow=follower)
+      new_follower.save()
+      return redirect ('/profile/'+user)
+  else:
+    return redirect ('/')
+  
 
 
 

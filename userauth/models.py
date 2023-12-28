@@ -36,5 +36,7 @@ class LikePost (models.Model):
   
 
 
-
+class Followers (models.Model):
+  follower = models.CharField(max_length=50)
+  
 
